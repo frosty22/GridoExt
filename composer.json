@@ -1,0 +1,28 @@
+{
+	"name": "frosty22/grido-ext",
+	"type": "library",
+	"description": "Extension for Grido, automated factory from entities based on annotations.",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Vít Ledvinka",
+			"homepage": "http://www.frosty22.cz"
+		}
+	],
+	"require": {
+		"php": ">= 5.2.0",
+		"nette/nette": "2.*",
+		"kdyby/doctrine": "*",
+		"o5/grido": "*",
+		"frosty22/ale": "*",
+		"frosty22/entity-meta-reader": "*"
+	},
+	"autoload": {
+		"psr-0": {
+			"GridoExt" : "src/"
+		},
+		"classmap": [
+			"src/GridoExt/exceptions.php"
+		]
+	}
+}

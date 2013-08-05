@@ -7,13 +7,69 @@ Založeno na super datagridu Grido: http://o5.github.io/grido-sandbox/
 
 Z hlediska API je zde podstatný pouze objekt GridoFactory, který je základní kámen této komponenty a vytváří instanci komponenty Grido, která již může být poté vykreslena. Tato továrnička přijímá GridoExt\Mapper, který přijímá QueryBuilder.
 
+> Jsem člověk líný a razím pravidlo: "Čím méňě kódu pro implementaci tím lépe.", tudíž z valné většiny nejsou potřeba žádné výchozí anotace (Format, Type, ...), pouze slouží pro přepsání výchozího chování.
+
+
+Mapping
+-------
+
+Součástí knihovny je několik objektů reprezentující anotace daných entit:
+
+> Základem této továrničky je EntityMetaReader a Ale, viz závislosti v composer
+
+- Format - umožňuje definovat vlastní formát pro vykreslení hodnot dané property
+- Type - umožňuje definovat datový typ pro hodnotu - vhodné pro kolekce
+
 
 Příklad
 -------
 
+Příklad entity:
+
+```php
+use EntityMetaReader\Mapping as EMR;
+use Doctrine\ORM\Mapping as ORM;
+use GridoExt\Mapping as GRID;
+
+
+class Product extends Ale\Entities\BaseEntity {
+
+	/**
+	 * @EMR\Name("Název produktu")
+	 * @GRID\Format(empty="nevyplněno")
+	 * @ORM\Column(type="string")
+	 * @var string
+	 */
+	protected $name;
+
+
+	/**
+	 * @EMR\Name("Expirace produktu")
+	 * @EMR\Access(read="admin")
+	 * @GRID\Format("j.n.Y H:i")
+	 * @ORM\Column(type="datetime")
+	 * @var DateTime
+	 */
+	protected $expire;
+
+
+	/**
+     * @EMR\Name("Jméno uživatele")
+     * @GRID\Type(type="select", mappedBy="name")
+     * @ORM\ManyToOne(targetEntity="User")
+     * @var User
+     */
+    protected $user;
+
+}
+```
+
+
 Jednoduché vytvoření datagridu, například pomocí továrničky:
 
 ```php
+class FooPresenter extends Presenter {
+
 
 	/**
 	 * @var \GridoExt\GridoFactory
@@ -66,4 +122,8 @@ Jednoduché vytvoření datagridu, například pomocí továrničky:
 	   ...
 	}
 
+
+}
 ```
+
+

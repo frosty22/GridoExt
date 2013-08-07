@@ -377,8 +377,7 @@ class GridoFactory extends \Nette\Object
 		$access = $column->getAnnotation('EntityMetaReader\Mapping\Access', TRUE);
 		/** @var \EntityMetaReader\Mapping\Access $access */
 
-		if (!$this->user) return TRUE;
-
+		if (!$this->user) return $access->isReadable();
 		return $access->checkReadAccess($this->user);
 	}
 

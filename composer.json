@@ -15,7 +15,8 @@
 		"kdyby/doctrine": "*",
 		"o5/grido": "*",
 		"frosty22/ale": "*",
-		"frosty22/entity-meta-reader": "*"
+		"frosty22/entity-meta-reader": "*",
+		"beberlei/DoctrineExtensions": "@stable"
 	},
 	"autoload": {
 		"psr-0": {

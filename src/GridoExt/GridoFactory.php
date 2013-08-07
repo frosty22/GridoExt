@@ -76,7 +76,7 @@ class GridoFactory extends \Nette\Object
 
 		$selectedParts = $mapper->getSelectedParts();
 		foreach ($mapper->getRootEntities($selectedParts) as $alias => $entity) {
-			$this->joinEntity($grid, $entity, $selectedParts, array($alias));
+			$this->joinEntity($mapper, $grid, $entity, $selectedParts, array($alias));
 			$grid->setRootEntity(strpos($entity, "\\") ? substr($entity, strrpos($entity, "\\") + 1) : $entity);
 		}
 
@@ -94,12 +94,13 @@ class GridoFactory extends \Nette\Object
 
 	/**
 	 * Join entity to datagrid
+	 * @param Mapper $mapper
 	 * @param Grid $grid
 	 * @param string $entity Entity name
 	 * @param array $selectedParts Array of selected parts
 	 * @param array $parents Parents
 	 */
-	protected function joinEntity(Grid $grid, $entity, array &$selectedParts, array $parents)
+	protected function joinEntity(Mapper $mapper, Grid $grid, $entity, array &$selectedParts, array $parents)
 	{
 		$lastParent = end($parents);
 		$entityColumns = $this->reader->getEntityColumns($entity);
@@ -124,12 +125,12 @@ class GridoFactory extends \Nette\Object
 				if ($type && $type->getType() === $type::TYPE_SELECT) {
 					$this->addColumnSelect($grid, $column, $subparents);
 				} else {
-					$this->joinEntity($grid, $column->getTargetEntity(), $selectedParts, $subparents);
+					$this->joinEntity($mapper, $grid, $column->getTargetEntity(), $selectedParts, $subparents);
 				}
 
 			}
 			elseif ($column->isValueType()) {
-				$this->addColumn($grid, $column, $parents);
+				$this->addColumn($mapper, $grid, $column, $parents);
 			}
 			else {
 				// Collections and others are ignored ...
@@ -141,16 +142,19 @@ class GridoFactory extends \Nette\Object
 
 	/**
 	 * Add column to datadagrid via reader
+	 * @param Mapper $mapper
 	 * @param Grid $grid
 	 * @param ColumnReader $column
 	 * @param array $parents
 	 * @throws UnexceptedMappingException
 	 */
-	protected function addColumn(Grid $grid, \EntityMetaReader\ColumnReader $column, array $parents)
+	protected function addColumn(Mapper $mapper, Grid $grid, \EntityMetaReader\ColumnReader $column, array $parents)
 	{
 		$label = $this->getColumnLabel($column);
 		$columnName = $this->getColumnName($column, $parents);
-		$valueRender = new ValueRender($column, $parents);
+
+		$render = $mapper->getRender($column->getEntity(), $column->getName());
+		$valueRender = new ValueRender($column, $parents, $render);
 
 		$columnMapping = $column->getAnnotation("Doctrine\\ORM\\Mapping\\Column");
 		if (!$columnMapping instanceof \Doctrine\ORM\Mapping\Column)

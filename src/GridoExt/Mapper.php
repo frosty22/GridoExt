@@ -1,6 +1,8 @@
 <?php
 
 namespace GridoExt;
+use GridoExt\Render\IRender;
+use GridoExt\Render\Link;
 
 /**
  * Grido cols mapper
@@ -17,6 +19,13 @@ class Mapper extends \Nette\Object
 	 * @var \Doctrine\ORM\QueryBuilder
 	 */
 	private $queryBuilder;
+
+
+	/**
+	 * List of renders
+	 * @var array
+	 */
+	private $renders = array();
 
 
 	/**
@@ -118,5 +127,63 @@ class Mapper extends \Nette\Object
 
 		return $parts;
 	}
+
+
+	/**
+	 * Add link
+	 * @param string $alias
+	 * @param string $property
+	 * @param string|callback $link
+	 */
+	public function addLink($entity, $property, $link)
+	{
+		$this->addCustomRender($entity, $property, new Link($link));
+	}
+
+
+	/**
+	 * Add custom render modificator
+	 * @param string $entity
+	 * @param string $property
+	 * @param IRender $render
+	 */
+	public function addCustomRender($entity, $property, IRender $render)
+	{
+		if (!$this->isSelected($entity, $property))
+			throw new \GridoExt\InvalidValueException("Entity '$entity' or '$property' of this entity not found or not selected.");
+
+		if (!isset($this->renders[$entity]))
+			$this->renders[$entity] = array();
+
+		$this->renders[$entity][$property] = $render;
+	}
+
+
+	/**
+	 * Own render
+	 * @param string $entity
+	 * @param string $property
+	 * @return null|IRender
+	 */
+	public function getRender($entity, $property)
+	{
+		return isset($this->renders[$entity][$property]) ? $this->renders[$entity][$property] : NULL;
+	}
+
+
+	/**
+	 * Check if is selected property of entity
+	 * @param string $entity
+	 * @param string $property
+	 * @return bool
+	 */
+	private function isSelected($entity, $property)
+	{
+		// TODO: Checking if is selected
+		return TRUE;
+	}
+
+
+
 
 }

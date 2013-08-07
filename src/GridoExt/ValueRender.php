@@ -3,6 +3,7 @@
 namespace GridoExt;
 
 use \Ale\Entities\BaseEntity;
+use GridoExt\Render\IRender;
 
 /**
  * Custom value render.
@@ -33,13 +34,21 @@ class ValueRender extends \Nette\Object
 
 
 	/**
+	 * @var Render\IRender
+	 */
+	protected $customRender;
+
+
+	/**
 	 * @param \EntityMetaReader\ColumnReader $column
 	 * @param array $parents
+	 * @param IRender $render Custom render modifier
 	 */
-	public function __construct(\EntityMetaReader\ColumnReader $column, array $parents)
+	public function __construct(\EntityMetaReader\ColumnReader $column, array $parents, IRender $render = NULL)
 	{
 		$this->column = $column;
 		$this->parents = $parents;
+		$this->customRender = $render;
 	}
 
 
@@ -51,7 +60,8 @@ class ValueRender extends \Nette\Object
 	public function renderString(BaseEntity $item)
 	{
 		$value = $this->getValue($item);
-		return is_null($value) || $value === "" ? $this->getEmptyValue() : $value;
+		$value = is_null($value) || $value === "" ? $this->getEmptyValue() : $value;
+		return $this->customRender($value, $item);
 	}
 
 
@@ -63,7 +73,8 @@ class ValueRender extends \Nette\Object
 	public function renderArray(BaseEntity $item)
 	{
 		$value = $this->getValue($item);
-		return is_array($value) && count($value) ? Implode(", ", $value) : $this->getEmptyValue();
+		$value = is_array($value) && count($value) ? Implode(", ", $value) : $this->getEmptyValue();
+		return $this->customRender($value, $item);
 	}
 
 
@@ -77,7 +88,9 @@ class ValueRender extends \Nette\Object
 		$value = $this->getValue($item);
 		$format = $this->column->getAnnotation('GridoExt\Mapping\Format', TRUE);
 		/** @var \GridoExt\Mapping\Format $format */
-		return empty($value) ? $format->getMessageFalse() : $format->getMessageTrue();
+
+		$value = empty($value) ? $format->getMessageFalse() : $format->getMessageTrue();
+		return $this->customRender($value, $item);
 	}
 
 
@@ -89,7 +102,8 @@ class ValueRender extends \Nette\Object
 	public function renderInteger(BaseEntity $item)
 	{
 		$value = $this->getValue($item);
-		return is_null($value) ? $this->getEmptyValue() : $value;
+		$value = is_null($value) ? $this->getEmptyValue() : $value;
+		return $this->customRender($value, $item);
 	}
 
 
@@ -106,7 +120,8 @@ class ValueRender extends \Nette\Object
 		$format	= $this->column->getAnnotation('GridoExt\Mapping\Format', TRUE);
 		/** @var \GridoExt\Mapping\Format $format */
 
-		return number_format($value, $format->getDecimals(), $format->getDecimalPoint(), $format->getThousands());
+		$value = number_format($value, $format->getDecimals(), $format->getDecimalPoint(), $format->getThousands());
+		return $this->customRender($value, $item);
 	}
 
 
@@ -117,7 +132,8 @@ class ValueRender extends \Nette\Object
 	 */
 	public function renderTime(BaseEntity $item)
 	{
-		return $this->processRenderDateTime($item, "time");
+		$value = $this->processRenderDateTime($item, "time");
+		return $this->customRender($value, $item);
 	}
 
 
@@ -128,7 +144,8 @@ class ValueRender extends \Nette\Object
 	 */
 	public function renderDate(BaseEntity $item)
 	{
-		return $this->processRenderDateTime($item, "date");
+		$value = $this->processRenderDateTime($item, "date");
+		return $this->customRender($value, $item);
 	}
 
 
@@ -139,7 +156,8 @@ class ValueRender extends \Nette\Object
 	 */
 	public function renderDateTime(BaseEntity $item)
 	{
-		return $this->processRenderDateTime($item, "datetime");
+		$value = $this->processRenderDateTime($item, "datetime");
+		return $this->customRender($value, $item);
 	}
 
 
@@ -181,12 +199,25 @@ class ValueRender extends \Nette\Object
 	 */
 	protected function getValue(BaseEntity $item)
 	{
+		$item = $this->getEntity($item);
+		if (!$item) return NULL;
+
+		return $item->{$this->column->getName()};
+	}
+
+
+	/**
+	 * Return usable entity
+	 * @param BaseEntity $item
+	 * @return BaseEntity|NULL
+	 */
+	protected function getEntity(BaseEntity $item)
+	{
 		for ($i = 1; $i < count($this->parents); $i++) {
 			$item = $item->{$this->parents[$i]};
 			if (!$item) return NULL;
 		}
-
-		return $item->{$this->column->getName()};
+		return $item;
 	}
 
 
@@ -214,6 +245,19 @@ class ValueRender extends \Nette\Object
 		$format	= $this->column->getAnnotation('GridoExt\Mapping\Format', TRUE);
 		/** @var \GridoExt\Mapping\Format $format */
 		return $format->getEmptyValue();
+	}
+
+
+	/**
+	 * Custom render modificators
+	 * @param string $value
+	 * @param BaseEntity $item
+	 * @return string
+	 */
+	protected function customRender($value, BaseEntity $item)
+	{
+		$item = $this->getEntity($item);
+		return $this->customRender ? $this->customRender->render($value, $item) : $value;
 	}
 
 }

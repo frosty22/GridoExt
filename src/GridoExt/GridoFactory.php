@@ -199,6 +199,18 @@ class GridoFactory extends \Nette\Object
 				break;
 
 			case "date":
+
+				$configuration = $this->entityManager->getConfiguration();
+
+				if ($configuration->getCustomDatetimeFunction("YEAR") === NULL)
+					throw new \GridoExt\MissingServiceException("Custom DateTime function 'YEAR' in Doctrine is required.");
+
+				if ($configuration->getCustomDatetimeFunction("MONTH") === NULL)
+					throw new \GridoExt\MissingServiceException("Custom DateTime function 'MONTH' in Doctrine is required.");
+
+				if ($configuration->getCustomDatetimeFunction("DAY") === NULL)
+					throw new \GridoExt\MissingServiceException("Custom DateTime function 'DAY' in Doctrine is required.");
+
 				$col = $grid->addColumnDate($columnName, $label)
 					->setCustomRender(array($valueRender, "renderDate"))
 					->setSortable();
@@ -224,6 +236,18 @@ class GridoFactory extends \Nette\Object
 				break;
 
 			case "datetime":
+
+				$configuration = $this->entityManager->getConfiguration();
+
+				if ($configuration->getCustomDatetimeFunction("YEAR") === NULL)
+					throw new \GridoExt\MissingServiceException("Custom DateTime function 'YEAR' in Doctrine is required.");
+
+				if ($configuration->getCustomDatetimeFunction("MONTH") === NULL)
+					throw new \GridoExt\MissingServiceException("Custom DateTime function 'MONTH' in Doctrine is required.");
+
+				if ($configuration->getCustomDatetimeFunction("DAY") === NULL)
+					throw new \GridoExt\MissingServiceException("Custom DateTime function 'DAY' in Doctrine is required.");
+
 				$col = $grid->addColumnDate($columnName, $label)
 					->setCustomRender(array($valueRender, "renderDateTime"))
 					->setSortable();

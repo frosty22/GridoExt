@@ -46,6 +46,8 @@ class Href extends \Grido\Components\Actions\Href {
 		if (!$rootEntity)
 			throw new InvalidStateException("Root entity must be set for Href action use.");
 
+		$rootEntity = strrpos($rootEntity, '\\') ? substr($rootEntity, strrpos($rootEntity, '\\') + 1) : $rootEntity;
+
 		$destination = $this->destination ? $this->destination : $this->name;
 		$args = $this->arguments;
 		$pk = $this->getPrimaryKey();

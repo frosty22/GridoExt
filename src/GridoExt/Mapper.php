@@ -144,7 +144,7 @@ class Mapper extends \Nette\Object
 	 */
 	public function addLink($entity, $property, $link)
 	{
-		$this->addCustomRender($entity, $property, new Link($link));
+		$this->addCustomRender($this->sanitizeNamespace($entity), $property, new Link($link));
 	}
 
 
@@ -156,6 +156,8 @@ class Mapper extends \Nette\Object
 	 */
 	public function addCustomRender($entity, $property, IRender $render)
 	{
+		$entity = $this->sanitizeNamespace($entity);
+
 		if (!$this->isSelected($entity, $property))
 			throw new \GridoExt\InvalidValueException("Entity '$entity' or '$property' of this entity not found or not selected.");
 
@@ -174,6 +176,7 @@ class Mapper extends \Nette\Object
 	 */
 	public function getRender($entity, $property)
 	{
+		$entity = $this->sanitizeNamespace($entity);
 		return isset($this->renders[$entity][$property]) ? $this->renders[$entity][$property] : NULL;
 	}
 
@@ -186,6 +189,8 @@ class Mapper extends \Nette\Object
 	 */
 	public function hide($entity, $property)
 	{
+		$entity = $this->sanitizeNamespace($entity);
+
 		if (!isset($this->hide[$entity]))
 			$this->hide[$entity] = array();
 
@@ -203,7 +208,7 @@ class Mapper extends \Nette\Object
 	 */
 	public function isHidden($entity, $property)
 	{
-		return isset($this->hide[$entity][$property]);
+		return isset($this->hide[$this->sanitizeNamespace($entity)][$property]);
 	}
 
 
@@ -220,6 +225,15 @@ class Mapper extends \Nette\Object
 	}
 
 
+	/**
+	 * Sanitize namespace
+	 * @param string $namespace
+	 * @return string
+	 */
+	private function sanitizeNamespace($namespace)
+	{
+		return $namespace[0] === '\\' ? mb_substr($namespace, 1) : $namespace;
+	}
 
 
 }

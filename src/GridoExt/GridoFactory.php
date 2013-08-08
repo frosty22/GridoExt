@@ -123,7 +123,7 @@ class GridoFactory extends \Nette\Object
 				$type = $column->getAnnotation('GridoExt\Mapping\Type');
 				/** @var \GridoExt\Mapping\Type $type */
 				if ($type && $type->getType() === $type::TYPE_SELECT) {
-					$this->addColumnSelect($grid, $column, $subparents);
+					$this->addColumnSelect($mapper, $grid, $column, $subparents);
 				} else {
 					$this->joinEntity($mapper, $grid, $column->getTargetEntity(), $selectedParts, $subparents);
 				}
@@ -152,6 +152,9 @@ class GridoFactory extends \Nette\Object
 	{
 		$label = $this->getColumnLabel($column);
 		$columnName = $this->getColumnName($column, $parents);
+
+		if ($mapper->isHidden($column->getEntity(), $column->getName()))
+			return;
 
 		$render = $mapper->getRender($column->getEntity(), $column->getName());
 		$valueRender = new ValueRender($column, $parents, $render);
@@ -278,16 +281,20 @@ class GridoFactory extends \Nette\Object
 
 
 	/**
+	 * @param Mapper $mapper
 	 * @param \Grido\Grid $grid
 	 * @param ColumnReader $column
 	 * @param array $parents
 	 */
-	protected function addColumnSelect(\Grido\Grid $grid, \EntityMetaReader\ColumnReader $column, array $parents)
+	protected function addColumnSelect(Mapper $mapper, \Grido\Grid $grid, \EntityMetaReader\ColumnReader $column, array $parents)
 	{
 		$type = $column->getAnnotation('GridoExt\Mapping\Type');
 		/** @var Type $type */
 
 		$targetEntity = $this->reader->getEntityColumns($column->getTargetEntity());
+
+		if ($mapper->isHidden($column->getEntity(), $column->getName()))
+			return;
 
 		$label = $this->getColumnLabel($column);
 		$columnName = $this->getColumnName($targetEntity[$type->getMappedBy()], $parents, $targetEntity[$type->getPrimaryKey()]);

@@ -29,6 +29,13 @@ class Mapper extends \Nette\Object
 
 
 	/**
+	 * List to hide
+	 * @var array
+	 */
+	private $hide = array();
+
+
+	/**
 	 * @param \Doctrine\ORM\QueryBuilder $qb
 	 */
 	public function __construct(\Doctrine\ORM\QueryBuilder $qb)
@@ -168,6 +175,35 @@ class Mapper extends \Nette\Object
 	public function getRender($entity, $property)
 	{
 		return isset($this->renders[$entity][$property]) ? $this->renders[$entity][$property] : NULL;
+	}
+
+
+	/**
+	 * Hide property
+	 * @param string $entity
+	 * @param string $property
+	 * @return $this
+	 */
+	public function hide($entity, $property)
+	{
+		if (!isset($this->hide[$entity]))
+			$this->hide[$entity] = array();
+
+		$this->hide[$entity][$property] = TRUE;
+
+		return $this;
+	}
+
+
+	/**
+	 * Is hidden
+	 * @param string $entity
+	 * @param string $property
+	 * @return bool
+	 */
+	public function isHidden($entity, $property)
+	{
+		return isset($this->hide[$entity][$property]);
 	}
 
 

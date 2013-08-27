@@ -152,11 +152,14 @@ class Mapper extends \Nette\Object
 	 * Add custom render modificator
 	 * @param string $entity
 	 * @param string $property
-	 * @param IRender $render
+	 * @param IRender|callable $render
 	 */
-	public function addCustomRender($entity, $property, IRender $render)
+	public function addCustomRender($entity, $property, $render)
 	{
 		$entity = $this->sanitizeNamespace($entity);
+
+		if (!$render instanceof IRender && !is_callable($render))
+			throw new \GridoExt\InvalidValueException("Render must be callback or IRender, but " . gettype($render) . " given");
 
 		if (!$this->isSelected($entity, $property))
 			throw new \GridoExt\InvalidValueException("Entity '$entity' or '$property' of this entity not found or not selected.");

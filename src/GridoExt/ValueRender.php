@@ -42,10 +42,13 @@ class ValueRender extends \Nette\Object
 	/**
 	 * @param \EntityMetaReader\ColumnReader $column
 	 * @param array $parents
-	 * @param IRender $render Custom render modifier
+	 * @param IRender|callable $render Custom render modifier
 	 */
-	public function __construct(\EntityMetaReader\ColumnReader $column, array $parents, IRender $render = NULL)
+	public function __construct(\EntityMetaReader\ColumnReader $column, array $parents, $render = NULL)
 	{
+		if ($render !== NULL && !$render instanceof IRender && !is_callable($render))
+			throw new \GridoExt\InvalidValueException("Render must be callback or IRender, but " . gettype($render) . " given");
+
 		$this->column = $column;
 		$this->parents = $parents;
 		$this->customRender = $render;
@@ -257,7 +260,14 @@ class ValueRender extends \Nette\Object
 	protected function customRender($value, BaseEntity $item)
 	{
 		$item = $this->getEntity($item);
-		return $this->customRender ? $this->customRender->render($value, $item) : $value;
+
+		if ($this->customRender instanceof IRender) {
+			return $this->customRender->render($value, $item);
+		}
+		elseif ($this->customRender) {
+			return call_user_func($this->customRender, $value, $item);
+		}
+		return $value;
 	}
 
 }

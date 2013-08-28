@@ -138,9 +138,10 @@ class Mapper extends \Nette\Object
 
 	/**
 	 * Add link
-	 * @param string $alias
+	 * @param string $entity
 	 * @param string $property
 	 * @param string|callback $link
+	 * @internal param string $alias
 	 */
 	public function addLink($entity, $property, $link)
 	{
@@ -153,6 +154,7 @@ class Mapper extends \Nette\Object
 	 * @param string $entity
 	 * @param string $property
 	 * @param IRender|callable $render
+	 * @throws InvalidValueException
 	 */
 	public function addCustomRender($entity, $property, $render)
 	{

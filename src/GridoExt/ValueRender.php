@@ -43,6 +43,7 @@ class ValueRender extends \Nette\Object
 	 * @param \EntityMetaReader\ColumnReader $column
 	 * @param array $parents
 	 * @param IRender|callable $render Custom render modifier
+	 * @throws InvalidValueException
 	 */
 	public function __construct(\EntityMetaReader\ColumnReader $column, array $parents, $render = NULL)
 	{
@@ -168,6 +169,7 @@ class ValueRender extends \Nette\Object
 	 * Render DateTime format
 	 * @param BaseEntity $item
 	 * @param string $type
+	 * @throws InvalidValueException
 	 * @return string
 	 */
 	protected function processRenderDateTime(BaseEntity $item, $type)

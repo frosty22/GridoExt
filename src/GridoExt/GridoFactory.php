@@ -146,6 +146,7 @@ class GridoFactory extends \Nette\Object
 	 * @param Grid $grid
 	 * @param ColumnReader $column
 	 * @param array $parents
+	 * @throws MissingServiceException
 	 * @throws UnexceptedMappingException
 	 */
 	protected function addColumn(Mapper $mapper, Grid $grid, \EntityMetaReader\ColumnReader $column, array $parents)

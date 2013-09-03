@@ -2,6 +2,7 @@
 
 namespace GridoExt;
 
+use Grido\Components\Filters\Filter;
 use GridoExt\PropertyAccessors\ObjectAccessor;
 use EntityMetaReader\ColumnReader;
 use EntityMetaReader\Mapping\Name;
@@ -163,6 +164,16 @@ class GridoFactory extends \Nette\Object
 		$columnMapping = $column->getAnnotation("Doctrine\\ORM\\Mapping\\Column");
 		if (!$columnMapping instanceof \Doctrine\ORM\Mapping\Column)
 			throw new UnexceptedMappingException("Invalid column mapping.");
+
+		$select = $column->getAnnotation("GridoExt\\Mapping\\Select");
+		if ($select !== NULL) {
+			/** @var \GridoExt\Mapping\Select $select */
+			$col = $grid->addColumnText($columnName, $label);
+			$col->setFilterSelect($select->getMapped());
+			$col->setReplacement($select->getReplacement());
+			$col->setSortable();
+			return;
+		}
 
 		switch ($columnMapping->type) {
 			case "string":

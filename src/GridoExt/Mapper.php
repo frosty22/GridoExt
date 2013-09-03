@@ -189,17 +189,22 @@ class Mapper extends \Nette\Object
 	/**
 	 * Hide property
 	 * @param string $entity
-	 * @param string $property
+	 * @param string|array $property
 	 * @return $this
 	 */
-	public function hide($entity, $property)
+	public function hide($entity, $properties)
 	{
-		$entity = $this->sanitizeNamespace($entity);
+		if (!is_array($properties))
+			$properties = array($properties);
 
-		if (!isset($this->hide[$entity]))
-			$this->hide[$entity] = array();
+		foreach ($properties as $property) {
+			$entity = $this->sanitizeNamespace($entity);
 
-		$this->hide[$entity][$property] = TRUE;
+			if (!isset($this->hide[$entity]))
+				$this->hide[$entity] = array();
+
+			$this->hide[$entity][$property] = TRUE;
+		}
 
 		return $this;
 	}

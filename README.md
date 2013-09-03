@@ -103,7 +103,7 @@ class FooPresenter extends Presenter {
 		$map->hide('Entity\Product', array('sale', 'price'));
 
 		// Můžeme chtít přidat odkaz na hodnotu ve sloupci - přidá odkaz na sloupec "name" vedoucí na "detail" s parametrem ID
-		$map->link('Entity\Product, 'name', function($product){ return $this->link("detail", $product->id); });
+		$map->link('Entity\Product', 'name', function($product){ return $this->link("detail", $product->id); });
 
 		// Případně můžeme vnutit i zde vlastní render (pokud nechceme globálně přes anotace entity)
 		$map->addCustomRender('Entity\Product', 'price', function($product){ return $product->price . ",-"; });

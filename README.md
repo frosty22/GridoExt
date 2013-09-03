@@ -19,6 +19,7 @@ Součástí knihovny je několik objektů reprezentující anotace daných entit
 
 - Format - umožňuje definovat vlastní formát pro vykreslení hodnot dané property
 - Type - umožňuje definovat datový typ pro hodnotu - vhodné pro kolekce
+- Select - slouží k vytvoření pole, které se namapuje na hodnoty
 
 
 Příklad
@@ -61,6 +62,15 @@ class Product extends Ale\Entities\BaseEntity {
      */
     protected $user;
 
+
+    /**
+     * @EMR\Name("Stav produktu")
+     * @GRID\Select(mapping={1 = 'Schválen', 2 = 'Zamítnut', 3 = 'Čeká'})
+     * @ORM\Column(type="smallint")
+     * @var int
+     */
+    protected $state;
+
 }
 ```
 
@@ -88,6 +98,16 @@ class FooPresenter extends Presenter {
 			->orderBy("product.created", "DESC"); // Defaultní řazení výsledků, datagridu může přepsat
 
 		$map = new \GridoExt\Mapper($qb); // Vytvoření mapperu pro továrničku
+
+		// Některé sloupce můžeme chtít v konkrétním gridu skýt - Skrytí sloupců "sale", "price"
+		$map->hide('Entity\Product', array('sale', 'price'));
+
+		// Můžeme chtít přidat odkaz na hodnotu ve sloupci - přidá odkaz na sloupec "name" vedoucí na "detail" s parametrem ID
+		$map->link('Entity\Product, 'name', function($product){ return $this->link("detail", $product->id); });
+
+		// Případně můžeme vnutit i zde vlastní render (pokud nechceme globálně přes anotace entity)
+		$map->addCustomRender('Entity\Product', 'price', function($product){ return $product->price . ",-"; });
+
 		$grido = $this->gridoFactory->create($map); // Vytvoření instance Grido pomocí továrničky
 
 		$grido->addActionHref("foo", "Foo"); // Vytvoření odkazu na actionFoo a předání parametru product

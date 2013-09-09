@@ -86,6 +86,9 @@ class GridoFactory extends \Nette\Object
 						new ColumnAliases(ColumnAliases::TYPE_SORT)
 				);
 
+		if ($mapper->getFetchJoinCollection() !== NULL)
+			$model->setFetchJoinCollection($mapper->getFetchJoinCollection());
+
 		if ($mapper->getCount() !== NULL)
 			$model->setCount($mapper->getCount());
 

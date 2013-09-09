@@ -40,6 +40,11 @@ class Mapper extends \Nette\Object
 	 */
 	private $count = NULL;
 
+	/**
+	 * @var bool
+	 */
+	private $fetchJoinCollection = NULL;
+
 
 	/**
 	 * @param \Doctrine\ORM\QueryBuilder $qb
@@ -110,6 +115,24 @@ class Mapper extends \Nette\Object
 	public function getCount()
 	{
 		return $this->count;
+	}
+
+
+	/**
+	 * @param boolean $fetchJoinCollection
+	 */
+	public function setFetchJoinCollection($fetchJoinCollection)
+	{
+		$this->fetchJoinCollection = $fetchJoinCollection;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getFetchJoinCollection()
+	{
+		return $this->fetchJoinCollection;
 	}
 
 

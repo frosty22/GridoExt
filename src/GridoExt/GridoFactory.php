@@ -85,6 +85,10 @@ class GridoFactory extends \Nette\Object
 						new ColumnAliases(ColumnAliases::TYPE_FILTER),
 						new ColumnAliases(ColumnAliases::TYPE_SORT)
 				);
+
+		if ($mapper->getCount() !== NULL)
+			$model->setCount($mapper->getCount());
+
 		$grid->setModel($model);
 
 		$this->setDefaultSort($grid, $mapper->getQueryBuilder());

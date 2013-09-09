@@ -36,6 +36,12 @@ class Mapper extends \Nette\Object
 
 
 	/**
+	 * @var int|string
+	 */
+	private $count = NULL;
+
+
+	/**
 	 * @param \Doctrine\ORM\QueryBuilder $qb
 	 */
 	public function __construct(\Doctrine\ORM\QueryBuilder $qb)
@@ -83,6 +89,27 @@ class Mapper extends \Nette\Object
 		}
 
 		return $entities;
+	}
+
+
+	/**
+	 * Can be integer for fixed count or "distinct" | "count"
+	 * @param int|string $count
+	 * @return $this
+	 */
+	public function setCount($count)
+	{
+		$this->count = $count;
+		return $this;
+	}
+
+
+	/**
+	 * @return int|string
+	 */
+	public function getCount()
+	{
+		return $this->count;
 	}
 
 
